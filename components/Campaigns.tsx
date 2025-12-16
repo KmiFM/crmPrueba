@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { MOCK_CONTACTS } from '../constants';
-import { Megaphone, Users, Send, Clock, CheckCircle, AlertTriangle, Plus, X, Filter, BarChart3, Calendar } from 'lucide-react';
+import { Megaphone, Users, Send, Clock, CheckCircle, AlertTriangle, Plus, X, Filter, BarChart3, Calendar, TrendingUp } from 'lucide-react';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Legend } from 'recharts';
 
 interface Campaign {
   id: string;
@@ -39,6 +40,16 @@ const MOCK_CAMPAIGNS: Campaign[] = [
     scheduledFor: '2023-11-24 09:00 AM',
     content: 'Exclusive 50% discount for our loyal customers.'
   }
+];
+
+const ANALYTICS_DATA = [
+  { date: 'Mon', sent: 120, read: 98, clicked: 45 },
+  { date: 'Tue', sent: 180, read: 150, clicked: 70 },
+  { date: 'Wed', sent: 160, read: 140, clicked: 65 },
+  { date: 'Thu', sent: 250, read: 210, clicked: 120 },
+  { date: 'Fri', sent: 310, read: 280, clicked: 160 },
+  { date: 'Sat', sent: 190, read: 170, clicked: 80 },
+  { date: 'Sun', sent: 140, read: 120, clicked: 50 },
 ];
 
 const Campaigns = () => {
@@ -135,6 +146,55 @@ const Campaigns = () => {
                 <p className="text-slate-500 text-sm font-medium">Scheduled Campaigns</p>
                 <h3 className="text-2xl font-bold text-slate-800">{campaigns.filter(c => c.status === 'scheduled').length}</h3>
             </div>
+        </div>
+      </div>
+
+      {/* Analytics Charts */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+        <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm h-[350px]">
+            <h3 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+                <TrendingUp className="w-5 h-5 text-blue-600" />
+                Engagement Trends
+            </h3>
+            <ResponsiveContainer width="100%" height="85%">
+                <AreaChart data={ANALYTICS_DATA}>
+                    <defs>
+                        <linearGradient id="colorSent" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.1}/>
+                            <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
+                        </linearGradient>
+                        <linearGradient id="colorRead" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="5%" stopColor="#10b981" stopOpacity={0.1}/>
+                            <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
+                        </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                    <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{fontSize: 12, fill: '#64748b'}} />
+                    <YAxis axisLine={false} tickLine={false} tick={{fontSize: 12, fill: '#64748b'}} />
+                    <Tooltip contentStyle={{borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'}} />
+                    <Legend iconType="circle" />
+                    <Area type="monotone" dataKey="sent" stroke="#3b82f6" fillOpacity={1} fill="url(#colorSent)" name="Sent" strokeWidth={2} />
+                    <Area type="monotone" dataKey="read" stroke="#10b981" fillOpacity={1} fill="url(#colorRead)" name="Read" strokeWidth={2} />
+                </AreaChart>
+            </ResponsiveContainer>
+        </div>
+
+        <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm h-[350px]">
+             <h3 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+                <BarChart3 className="w-5 h-5 text-purple-600" />
+                Delivery & Interaction
+            </h3>
+             <ResponsiveContainer width="100%" height="85%">
+                <BarChart data={ANALYTICS_DATA}>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                    <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{fontSize: 12, fill: '#64748b'}} />
+                    <YAxis axisLine={false} tickLine={false} tick={{fontSize: 12, fill: '#64748b'}} />
+                    <Tooltip cursor={{fill: '#f8fafc'}} contentStyle={{borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'}} />
+                    <Legend iconType="circle" />
+                    <Bar dataKey="sent" fill="#94a3b8" radius={[4, 4, 0, 0]} name="Total Sent" barSize={30} />
+                    <Bar dataKey="clicked" fill="#8b5cf6" radius={[4, 4, 0, 0]} name="Link Clicks" barSize={30} />
+                </BarChart>
+            </ResponsiveContainer>
         </div>
       </div>
 
