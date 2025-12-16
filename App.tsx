@@ -8,15 +8,19 @@ import {
   Menu,
   Building2,
   Box,
-  Bot
+  Bot,
+  Megaphone
 } from 'lucide-react';
 import Inbox from './components/Inbox';
 import Dashboard from './components/Dashboard';
 import ResellerPortal from './components/ResellerPortal';
 import AiAgents from './components/AiAgents';
+import IntegrationSettings from './components/IntegrationSettings';
+import Contacts from './components/Contacts';
+import Campaigns from './components/Campaigns';
 import { CURRENT_USER } from './constants';
 
-type View = 'dashboard' | 'inbox' | 'contacts' | 'reseller' | 'settings' | 'agents';
+type View = 'dashboard' | 'inbox' | 'contacts' | 'reseller' | 'settings' | 'agents' | 'campaigns';
 
 const App = () => {
   const [currentView, setCurrentView] = useState<View>('inbox');
@@ -69,6 +73,7 @@ const App = () => {
             <NavItem view="dashboard" icon={LayoutDashboard} label="Dashboard" />
             <NavItem view="inbox" icon={MessageSquare} label="Inbox" />
             <NavItem view="contacts" icon={Users} label="Contacts" />
+            <NavItem view="campaigns" icon={Megaphone} label="Campaigns" />
           </div>
 
           <div className="mb-8">
@@ -127,15 +132,9 @@ const App = () => {
           {currentView === 'dashboard' && <Dashboard />}
           {currentView === 'reseller' && <ResellerPortal />}
           {currentView === 'agents' && <AiAgents />}
-          {(currentView === 'contacts' || currentView === 'settings') && (
-            <div className="flex items-center justify-center h-full text-slate-400 bg-slate-50">
-              <div className="text-center">
-                <Settings className="w-12 h-12 mx-auto mb-4 text-slate-300" />
-                <h3 className="text-lg font-medium text-slate-600">Work in Progress</h3>
-                <p>This module is under development.</p>
-              </div>
-            </div>
-          )}
+          {currentView === 'settings' && <IntegrationSettings />}
+          {currentView === 'contacts' && <Contacts />}
+          {currentView === 'campaigns' && <Campaigns />}
         </div>
       </main>
     </div>

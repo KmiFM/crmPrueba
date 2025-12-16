@@ -8,7 +8,14 @@ const AiAgents = () => {
   const [editingId, setEditingId] = useState<string | null>(null);
 
   const toggleAgent = (id: string) => {
-    setAgents(agents.map(a => a.id === id ? { ...a, isActive: !a.isActive } : a));
+    setAgents(prevAgents => prevAgents.map(a => {
+      if (a.id === id) {
+        const newStatus = !a.isActive;
+        console.log(`[System Event] Agent "${a.name}" status updated to: ${newStatus ? 'ACTIVE' : 'INACTIVE'}`);
+        return { ...a, isActive: newStatus };
+      }
+      return a;
+    }));
   };
 
   return (

@@ -1,3 +1,4 @@
+
 export interface User {
   id: string;
   name: string;
@@ -11,7 +12,9 @@ export interface Message {
   senderId: string; // 'me' or contactId
   timestamp: string;
   type: 'text' | 'image' | 'audio';
-  status: 'sent' | 'delivered' | 'read';
+  status: 'sent' | 'delivered' | 'read' | 'scheduled';
+  aiAgentId?: string;
+  scheduledAt?: string; // ISO Date string for scheduled messages
 }
 
 export interface Contact {
@@ -60,4 +63,20 @@ export interface AiAgent {
 export interface ChartData {
   name: string;
   value: number;
+}
+
+export interface WhatsAppConfig {
+  provider: 'cloud' | 'evolution';
+  // Cloud API Specifics
+  phoneNumberId?: string;
+  businessAccountId?: string;
+  accessToken?: string;
+  // Evolution API Specifics
+  baseUrl?: string;
+  apiKey?: string;
+  instanceName?: string;
+  // Common
+  webhookUrl: string;
+  verifyToken: string;
+  status: 'connected' | 'disconnected' | 'validating' | 'qr_ready';
 }
