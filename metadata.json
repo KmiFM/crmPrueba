@@ -1,0 +1,5 @@
+{
+  "name": "Copy of IADS CRM",
+  "description": "A multi-tenant WhatsApp CRM inspired by Chatwoot with group support, AI auto-responses, and a reseller dashboard.",
+  "requestFramePermissions": []
+}
