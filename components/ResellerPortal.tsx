@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { MOCK_TENANTS } from '../constants';
 import { Tenant } from '../types';
-import { Plus, MoreHorizontal, CheckCircle, AlertCircle, Search, DollarSign, Users, Building, Trash2, X, Mail, Phone, MapPin, CreditCard, FileText, Activity, Clock, Edit2, Save } from 'lucide-react';
+import { Plus, MoreHorizontal, CheckCircle, AlertCircle, Search, DollarSign, Users, Building, Trash2, X, Mail, Phone, MapPin, CreditCard, FileText, Activity, Clock, Edit2, Save, Link2, ShieldCheck, Loader2 } from 'lucide-react';
 
 const ResellerPortal = () => {
   const [tenants, setTenants] = useState<Tenant[]>(MOCK_TENANTS);
@@ -10,7 +10,17 @@ const ResellerPortal = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [editFormData, setEditFormData] = useState<Tenant | null>(null);
   
-  const [newTenant, setNewTenant] = useState({ name: '', contactPerson: '', monthlyRevenue: 0 });
+  // Stripe & Payment State
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  const [stripeConfig, setStripeConfig] = useState({
+      connected: false,
+      publicKey: 'pk_test_...',
+      secretKey: '',
+      webhookSecret: ''
+  });
+  const [isConnectingStripe, setIsConnectingStripe] = useState(false);
+
+  const [newTenant, setNewTenant] = useState({ name: '', contactPerson: '', monthlyRevenue: 0, syncStripe: false });
 
   // Metrics Calculation
   const totalClients = tenants.length;
@@ -43,9 +53,15 @@ const ResellerPortal = () => {
         monthlyRevenue: Number(newTenant.monthlyRevenue) || 0,
         nextBilling: new Date(Date.now() + 30*24*60*60*1000).toISOString().split('T')[0]
     };
+    
+    // Simulate Stripe Sync
+    if (newTenant.syncStripe && stripeConfig.connected) {
+        console.log(`[Stripe Mock] Creating Customer ${tenant.name} and Subscription...`);
+    }
+
     setTenants([...tenants, tenant]);
     setIsAddModalOpen(false);
-    setNewTenant({ name: '', contactPerson: '', monthlyRevenue: 0 });
+    setNewTenant({ name: '', contactPerson: '', monthlyRevenue: 0, syncStripe: false });
   };
 
   const handleSaveChanges = () => {
@@ -55,6 +71,15 @@ const ResellerPortal = () => {
       setIsEditing(false);
   };
 
+  const handleConnectStripe = () => {
+      setIsConnectingStripe(true);
+      // Simulate API verification
+      setTimeout(() => {
+          setStripeConfig(prev => ({ ...prev, connected: true }));
+          setIsConnectingStripe(false);
+      }, 1500);
+  };
+
   return (
     <div className="p-8 h-full overflow-y-auto relative">
       <div className="flex justify-between items-center mb-8">
@@ -62,13 +87,22 @@ const ResellerPortal = () => {
           <h1 className="text-2xl font-bold text-slate-800">Reseller Portal</h1>
           <p className="text-slate-500">Manage your client instances, subscriptions, and revenue.</p>
         </div>
-        <button 
-            onClick={() => setIsAddModalOpen(true)}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 font-medium transition-colors"
-        >
-          <Plus className="w-4 h-4" />
-          Add Client
-        </button>
+        <div className="flex gap-3">
+            <button 
+                onClick={() => setIsPaymentModalOpen(true)}
+                className="bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 px-4 py-2 rounded-lg flex items-center gap-2 font-medium transition-colors"
+            >
+            <CreditCard className="w-4 h-4" />
+            Payment Settings
+            </button>
+            <button 
+                onClick={() => setIsAddModalOpen(true)}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 font-medium transition-colors"
+            >
+            <Plus className="w-4 h-4" />
+            Add Client
+            </button>
+        </div>
       </div>
 
       {/* Metrics Dashboard */}
@@ -148,8 +182,13 @@ const ResellerPortal = () => {
                 <td className="px-6 py-4 text-slate-600 text-sm">
                   {tenant.users} agents
                 </td>
-                 <td className="px-6 py-4 text-slate-900 font-medium text-sm">
+                 <td className="px-6 py-4 text-slate-900 font-medium text-sm flex items-center gap-1">
                   ${tenant.monthlyRevenue}
+                  {stripeConfig.connected && tenant.monthlyRevenue > 0 && (
+                      <div className="text-purple-500" title="Synced with Stripe">
+                          <Link2 className="w-3 h-3" />
+                      </div>
+                  )}
                 </td>
                 <td className="px-6 py-4 text-slate-500 text-sm">
                   {tenant.nextBilling}
@@ -184,6 +223,88 @@ const ResellerPortal = () => {
           </tbody>
         </table>
       </div>
+
+      {/* Payment Settings Modal */}
+      {isPaymentModalOpen && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 backdrop-blur-sm p-4">
+            <div className="bg-white rounded-xl shadow-xl w-full max-w-lg animate-in fade-in zoom-in duration-200">
+                <div className="flex justify-between items-center p-6 border-b border-slate-100">
+                    <h3 className="text-lg font-bold text-slate-800 flex items-center gap-2">
+                        <CreditCard className="w-5 h-5 text-purple-600" />
+                        Payment Gateway
+                    </h3>
+                    <button onClick={() => setIsPaymentModalOpen(false)} className="text-slate-400 hover:text-slate-600">
+                        <X className="w-5 h-5" />
+                    </button>
+                </div>
+                
+                <div className="p-6 space-y-6">
+                    <div className={`p-4 rounded-xl border flex items-center justify-between ${stripeConfig.connected ? 'bg-emerald-50 border-emerald-100' : 'bg-slate-50 border-slate-200'}`}>
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center shadow-sm">
+                                <span className="font-bold text-slate-700 text-lg">S</span>
+                            </div>
+                            <div>
+                                <h4 className="font-bold text-slate-800">Stripe Payments</h4>
+                                <p className={`text-xs ${stripeConfig.connected ? 'text-emerald-600' : 'text-slate-500'}`}>
+                                    {stripeConfig.connected ? 'Connected and processing' : 'Not connected'}
+                                </p>
+                            </div>
+                        </div>
+                        <div className={`px-3 py-1 rounded-full text-xs font-bold ${stripeConfig.connected ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-200 text-slate-500'}`}>
+                            {stripeConfig.connected ? 'ACTIVE' : 'OFFLINE'}
+                        </div>
+                    </div>
+
+                    <div className="space-y-4">
+                        <div>
+                            <label className="block text-sm font-medium text-slate-700 mb-1">Publishable Key</label>
+                            <div className="relative">
+                                <ShieldCheck className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
+                                <input 
+                                    type="text" 
+                                    value={stripeConfig.publicKey}
+                                    onChange={(e) => setStripeConfig({...stripeConfig, publicKey: e.target.value})}
+                                    className="w-full pl-10 pr-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-purple-500 outline-none text-sm font-mono"
+                                    placeholder="pk_test_..."
+                                />
+                            </div>
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-slate-700 mb-1">Secret Key</label>
+                             <div className="relative">
+                                <ShieldCheck className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
+                                <input 
+                                    type="password" 
+                                    value={stripeConfig.secretKey}
+                                    onChange={(e) => setStripeConfig({...stripeConfig, secretKey: e.target.value})}
+                                    className="w-full pl-10 pr-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-purple-500 outline-none text-sm font-mono"
+                                    placeholder="sk_test_..."
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="p-6 border-t border-slate-100 bg-slate-50 rounded-b-xl flex justify-end gap-3">
+                    <button 
+                        onClick={() => setIsPaymentModalOpen(false)}
+                        className="px-4 py-2 border border-slate-300 rounded-lg text-slate-700 font-medium hover:bg-white transition-colors"
+                    >
+                        Close
+                    </button>
+                    <button 
+                        onClick={handleConnectStripe}
+                        disabled={isConnectingStripe || stripeConfig.connected}
+                        className={`px-4 py-2 text-white rounded-lg font-medium transition-colors flex items-center gap-2 ${stripeConfig.connected ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-purple-600 hover:bg-purple-700'}`}
+                    >
+                        {isConnectingStripe ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
+                        {stripeConfig.connected ? 'Settings Saved' : 'Connect Account'}
+                    </button>
+                </div>
+            </div>
+        </div>
+      )}
 
       {/* Add Client Modal */}
       {isAddModalOpen && (
@@ -226,13 +347,33 @@ const ResellerPortal = () => {
                             onChange={(e) => setNewTenant({...newTenant, monthlyRevenue: parseFloat(e.target.value)})}
                           />
                       </div>
+
+                      {/* Stripe Sync Toggle */}
+                      {stripeConfig.connected && (
+                          <div className="bg-purple-50 p-3 rounded-lg border border-purple-100 flex items-center justify-between">
+                              <div className="flex items-center gap-2">
+                                  <CreditCard className="w-4 h-4 text-purple-600" />
+                                  <span className="text-sm font-medium text-purple-900">Sync with Stripe</span>
+                              </div>
+                              <label className="relative inline-flex items-center cursor-pointer">
+                                  <input 
+                                    type="checkbox" 
+                                    className="sr-only peer"
+                                    checked={newTenant.syncStripe}
+                                    onChange={(e) => setNewTenant({...newTenant, syncStripe: e.target.checked})}
+                                  />
+                                  <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
+                              </label>
+                          </div>
+                      )}
+
                       <div className="pt-2">
                         <button 
                             onClick={handleAddClient}
                             disabled={!newTenant.name || !newTenant.contactPerson}
                             className="w-full bg-blue-600 text-white py-2.5 rounded-lg font-medium hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                            Create Account
+                            {newTenant.syncStripe ? 'Create & Subscribe' : 'Create Account'}
                         </button>
                       </div>
                   </div>
@@ -360,6 +501,7 @@ const ResellerPortal = () => {
                     <div className="pt-2 border-t border-slate-200 mt-2 flex items-center gap-2 text-xs text-slate-500">
                       <CreditCard className="w-3 h-3" />
                       <span>Visa ending in 4242</span>
+                      {stripeConfig.connected && <span className="text-purple-600 font-medium ml-auto flex items-center gap-1"><Link2 className="w-3 h-3"/> Stripe Linked</span>}
                     </div>
                   </div>
                 </div>
