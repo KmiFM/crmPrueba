@@ -1,8 +1,10 @@
 import { Contact, Conversation, Tenant, User, AiAgent } from './types';
 
+// Fix: Added missing 'email' property required by the User interface
 export const CURRENT_USER: User = {
   id: 'me',
   name: 'Agent Smith',
+  email: 'agent.smith@iads.com',
   avatar: 'https://picsum.photos/id/1005/100/100',
   role: 'superadmin', // Set to superadmin to see reseller view
 };
@@ -85,9 +87,45 @@ export const MOCK_CONVERSATIONS: Conversation[] = [
 ];
 
 export const MOCK_TENANTS: Tenant[] = [
-  { id: 't1', name: 'Alpha Agency', contactPerson: 'Alice', status: 'active', users: 5, monthlyRevenue: 150, nextBilling: '2023-11-01' },
-  { id: 't2', name: 'Beta Marketing', contactPerson: 'Bob', status: 'active', users: 12, monthlyRevenue: 300, nextBilling: '2023-11-05' },
-  { id: 't3', name: 'Gamma Sales', contactPerson: 'Charlie', status: 'trial', users: 2, monthlyRevenue: 0, nextBilling: '2023-11-15' },
+  { 
+    id: 't1', 
+    name: 'Alpha Agency', 
+    contactPerson: 'Alice Vancity', 
+    email: 'alice@alpha.com',
+    phoneNumber: '+1 555 1234',
+    address: 'Vancouver, BC',
+    plan: 'pro',
+    status: 'active', 
+    users: 5, 
+    monthlyRevenue: 200, 
+    nextBilling: '2023-11-01' 
+  },
+  { 
+    id: 't2', 
+    name: 'Beta Marketing', 
+    contactPerson: 'Bob Builder', 
+    email: 'bob@beta.io',
+    phoneNumber: '+1 555 5678',
+    address: 'Austin, TX',
+    plan: 'golden',
+    status: 'active', 
+    users: 12, 
+    monthlyRevenue: 300, 
+    nextBilling: '2023-11-05' 
+  },
+  { 
+    id: 't3', 
+    name: 'Gamma Sales', 
+    contactPerson: 'Charlie Brown', 
+    email: 'charlie@gamma.net',
+    phoneNumber: '+44 20 7123 4567',
+    address: 'London, UK',
+    plan: 'basic',
+    status: 'trial', 
+    users: 2, 
+    monthlyRevenue: 0, 
+    nextBilling: '2023-11-15' 
+  },
 ];
 
 export const MOCK_AGENTS: AiAgent[] = [

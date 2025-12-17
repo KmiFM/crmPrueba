@@ -1,10 +1,8 @@
 import { GoogleGenAI } from "@google/genai";
 import { Message } from "../types";
 
-// Initialize the client. 
-// NOTE: In a real app, ensure API_KEY is set in environment variables.
-// The code assumes process.env.API_KEY is available.
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || 'dummy_key_for_demo' });
+// Fix: Initialize the client using the correct named parameter and process.env.API_KEY directly
+const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
 export const getSmartReply = async (
   messages: Message[], 
@@ -29,8 +27,9 @@ export const getSmartReply = async (
       3. Keep it natural for a WhatsApp chat.
     `;
 
+    // Fix: Using gemini-3-flash-preview for basic text tasks as per model selection guidelines
     const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
+      model: 'gemini-3-flash-preview',
       contents: `Current Conversation:\n${conversationHistory}`,
       config: {
         systemInstruction: systemInstruction,
@@ -55,8 +54,9 @@ export const analyzeSentiment = async (messages: Message[]): Promise<string> => 
       ${conversationHistory}
     `;
 
+    // Fix: Using gemini-3-flash-preview for basic text tasks
     const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
+      model: 'gemini-3-flash-preview',
       contents: prompt,
     });
 

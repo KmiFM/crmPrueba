@@ -2,19 +2,22 @@
 export interface User {
   id: string;
   name: string;
+  email: string;
+  password?: string;
   avatar: string;
   role: 'agent' | 'admin' | 'superadmin';
+  tenantId?: string; // ID de la agencia a la que pertenece
 }
 
 export interface Message {
   id: string;
   content: string;
-  senderId: string; // 'me' or contactId
+  senderId: string;
   timestamp: string;
   type: 'text' | 'image' | 'audio';
   status: 'sent' | 'delivered' | 'read' | 'scheduled';
   aiAgentId?: string;
-  scheduledAt?: string; // ISO Date string for scheduled messages
+  scheduledAt?: string;
 }
 
 export interface Contact {
@@ -44,6 +47,10 @@ export interface Tenant {
   id: string;
   name: string;
   contactPerson: string;
+  email: string;
+  phoneNumber: string;
+  address?: string;
+  plan: 'basic' | 'pro' | 'golden';
   status: 'active' | 'trial' | 'suspended';
   users: number;
   monthlyRevenue: number;
@@ -60,22 +67,14 @@ export interface AiAgent {
   isActive: boolean;
 }
 
-export interface ChartData {
-  name: string;
-  value: number;
-}
-
 export interface WhatsAppConfig {
   provider: 'cloud' | 'evolution';
-  // Cloud API Specifics
   phoneNumberId?: string;
   businessAccountId?: string;
   accessToken?: string;
-  // Evolution API Specifics
   baseUrl?: string;
   apiKey?: string;
   instanceName?: string;
-  // Common
   webhookUrl: string;
   verifyToken: string;
   status: 'connected' | 'disconnected' | 'validating' | 'qr_ready';
