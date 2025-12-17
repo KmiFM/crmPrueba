@@ -17,6 +17,7 @@ export interface Message {
   type: 'text' | 'image' | 'audio';
   status: 'sent' | 'delivered' | 'read' | 'scheduled';
   aiAgentId?: string;
+  isAutoReplied?: boolean;
   scheduledAt?: string;
 }
 
@@ -65,6 +66,7 @@ export interface AiAgent {
   systemInstruction: string;
   avatar: string;
   isActive: boolean;
+  isAutoReplyEnabled: boolean;
 }
 
 export interface WhatsAppConfig {

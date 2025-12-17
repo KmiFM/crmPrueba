@@ -1,12 +1,12 @@
+
 import { Contact, Conversation, Tenant, User, AiAgent } from './types';
 
-// Fix: Added missing 'email' property required by the User interface
 export const CURRENT_USER: User = {
   id: 'me',
   name: 'Agent Smith',
   email: 'agent.smith@iads.com',
   avatar: 'https://picsum.photos/id/1005/100/100',
-  role: 'superadmin', // Set to superadmin to see reseller view
+  role: 'superadmin', 
 };
 
 export const MOCK_CONTACTS: Record<string, Contact> = {
@@ -69,20 +69,6 @@ export const MOCK_CONVERSATIONS: Conversation[] = [
       { id: 'm5', content: 'Hi Maria! Yes, how can I help you today?', senderId: 'me', timestamp: 'Yesterday', type: 'text', status: 'read' },
       { id: 'm6', content: 'Is the pricing flexible?', senderId: 'c2', timestamp: 'Yesterday', type: 'text', status: 'read' },
     ]
-  },
-  {
-    id: 'conv3',
-    contactId: 'c3',
-    lastMessage: 'Thanks for the help.',
-    lastMessageTime: 'Mon',
-    unreadCount: 0,
-    status: 'resolved',
-    channel: 'whatsapp',
-    messages: [
-      { id: 'm7', content: 'My API key is not working.', senderId: 'c3', timestamp: 'Mon', type: 'text', status: 'read' },
-      { id: 'm8', content: 'Let me reset it for you.', senderId: 'me', timestamp: 'Mon', type: 'text', status: 'read' },
-      { id: 'm9', content: 'Thanks for the help.', senderId: 'c3', timestamp: 'Mon', type: 'text', status: 'read' },
-    ]
   }
 ];
 
@@ -99,61 +85,28 @@ export const MOCK_TENANTS: Tenant[] = [
     users: 5, 
     monthlyRevenue: 200, 
     nextBilling: '2023-11-01' 
-  },
-  { 
-    id: 't2', 
-    name: 'Beta Marketing', 
-    contactPerson: 'Bob Builder', 
-    email: 'bob@beta.io',
-    phoneNumber: '+1 555 5678',
-    address: 'Austin, TX',
-    plan: 'golden',
-    status: 'active', 
-    users: 12, 
-    monthlyRevenue: 300, 
-    nextBilling: '2023-11-05' 
-  },
-  { 
-    id: 't3', 
-    name: 'Gamma Sales', 
-    contactPerson: 'Charlie Brown', 
-    email: 'charlie@gamma.net',
-    phoneNumber: '+44 20 7123 4567',
-    address: 'London, UK',
-    plan: 'basic',
-    status: 'trial', 
-    users: 2, 
-    monthlyRevenue: 0, 
-    nextBilling: '2023-11-15' 
-  },
+  }
 ];
 
 export const MOCK_AGENTS: AiAgent[] = [
   {
     id: 'a1',
-    name: 'Sales Expert',
-    role: 'Sales',
-    description: 'Persuasive, focuses on closing deals and highlighting value.',
-    systemInstruction: 'You are a top-tier Sales Representative. Your goal is to close the deal. Be persuasive, professional, and focus on the value proposition. Always try to move the conversation towards a meeting or a sale. Keep responses concise.',
+    name: 'Cierre Maestro',
+    role: 'Ventas',
+    description: 'Enfocado en persuasión y agendar demos.',
+    systemInstruction: 'Eres un experto en ventas. Tu objetivo es convencer al cliente de que nuestro CRM es la mejor opción y agendar una llamada. Sé amable pero directo.',
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Felix',
-    isActive: true
+    isActive: true,
+    isAutoReplyEnabled: true
   },
   {
     id: 'a2',
-    name: 'Tech Support',
-    role: 'Support',
-    description: 'Patient, technical, and solution-oriented.',
-    systemInstruction: 'You are a Technical Support Engineer. Be patient, clear, and step-by-step. Avoid jargon unless the user is technical. Focus on solving the problem efficiently. Empathize with the user frustration.',
+    name: 'Soporte 24/7',
+    role: 'Soporte',
+    description: 'Resuelve dudas técnicas y problemas comunes.',
+    systemInstruction: 'Eres un técnico de soporte. Ayuda al usuario con paciencia. Si el problema es grave, pide sus datos para escalarlo.',
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Aneka',
-    isActive: true
-  },
-  {
-    id: 'a3',
-    name: 'Concierge',
-    role: 'General',
-    description: 'Friendly, helpful, general purpose assistant.',
-    systemInstruction: 'You are a friendly Concierge. Be polite, warm, and helpful. You can assist with scheduling, general questions, and providing information about the company.',
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Scooby',
-    isActive: true
+    isActive: true,
+    isAutoReplyEnabled: false
   }
 ];
