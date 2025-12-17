@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Analytics } from '@vercel/analytics/react';
 import { 
   LayoutDashboard, 
   MessageSquare, 
@@ -65,6 +66,7 @@ const App = () => {
   };
 
   return (
+    <>
     <div className="flex h-screen overflow-hidden bg-slate-50">
       {/* Mobile Sidebar Overlay */}
       {isSidebarOpen && (
@@ -178,6 +180,8 @@ const App = () => {
         </div>
       </main>
     </div>
+    <Analytics />
+    </>
   );
 };
 
