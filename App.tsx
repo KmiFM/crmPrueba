@@ -15,6 +15,7 @@ import {
   ShieldCheck,
   UserPlus
 } from 'lucide-react';
+import { Analytics } from '@vercel/analytics/react';
 import Inbox from './components/Inbox';
 import Dashboard from './components/Dashboard';
 import ResellerPortal from './components/ResellerPortal';
@@ -76,14 +77,16 @@ const App = () => {
   };
 
   return (
-    <div className="flex h-screen overflow-hidden bg-slate-50 animate-in fade-in duration-700">
-      {/* Sidebar Overlay for Mobile */}
-      {isSidebarOpen && (
-        <div 
-          className="fixed inset-0 bg-slate-900/40 z-30 md:hidden backdrop-blur-sm"
-          onClick={() => setIsSidebarOpen(false)}
-        />
-      )}
+    <>
+      <Analytics />
+      <div className="flex h-screen overflow-hidden bg-slate-50 animate-in fade-in duration-700">
+        {/* Sidebar Overlay for Mobile */}
+        {isSidebarOpen && (
+          <div 
+            className="fixed inset-0 bg-slate-900/40 z-30 md:hidden backdrop-blur-sm"
+            onClick={() => setIsSidebarOpen(false)}
+          />
+        )}
 
       {/* Sidebar */}
       <aside className={`
@@ -193,6 +196,7 @@ const App = () => {
         </div>
       </main>
     </div>
+    </>
   );
 };
 
