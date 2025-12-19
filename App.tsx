@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   LayoutDashboard, 
   MessageSquare, 
@@ -13,7 +13,8 @@ import {
   Megaphone,
   UserCircle,
   ShieldCheck,
-  UserPlus
+  UserPlus,
+  BookOpen
 } from 'lucide-react';
 import Inbox from './components/Inbox';
 import Dashboard from './components/Dashboard';
@@ -23,36 +24,90 @@ import IntegrationSettings from './components/IntegrationSettings';
 import Contacts from './components/Contacts';
 import Campaigns from './components/Campaigns';
 import Billing from './components/Billing';
+import Documentation from './components/Documentation';
+import TeamManagement from './components/TeamManagement';
+import Profile from './components/Profile';
 import Login from './components/Login';
-import { User } from './types';
+import { User, Tenant } from './types';
+import { MOCK_USERS, MOCK_TENANTS } from './constants';
 
-type View = 'dashboard' | 'inbox' | 'contacts' | 'reseller' | 'settings' | 'agents' | 'campaigns' | 'billing' | 'team';
+export type View = 'dashboard' | 'inbox' | 'contacts' | 'reseller' | 'settings' | 'agents' | 'campaigns' | 'billing' | 'team' | 'documentation' | 'profile';
 
 const App = () => {
+  // Database Simulation State
+  const [dbUsers, setDbUsers] = useState<User[]>([]);
+  const [dbTenants, setDbTenants] = useState<Tenant[]>([]);
+  const [platformLogo, setPlatformLogo] = useState('https://picsum.photos/id/1/200/200'); // Default platform logo
   const [user, setUser] = useState<User | null>(null);
   const [currentView, setCurrentView] = useState<View>('inbox');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
+  // Initialize DB from LocalStorage or Mocks
+  useEffect(() => {
+    const savedUsers = localStorage.getItem('iads_users');
+    const savedTenants = localStorage.getItem('iads_tenants');
+    const savedLogo = localStorage.getItem('iads_platform_logo');
+    
+    if (savedUsers) setDbUsers(JSON.parse(savedUsers));
+    else {
+      setDbUsers(MOCK_USERS);
+      localStorage.setItem('iads_users', JSON.stringify(MOCK_USERS));
+    }
+
+    if (savedTenants) setDbTenants(JSON.parse(savedTenants));
+    else {
+      setDbTenants(MOCK_TENANTS);
+      localStorage.setItem('iads_tenants', JSON.stringify(MOCK_TENANTS));
+    }
+
+    if (savedLogo) setPlatformLogo(savedLogo);
+  }, []);
+
+  // Update LocalStorage whenever DB changes
+  const updateUsers = (newUsers: User[]) => {
+    setDbUsers(newUsers);
+    localStorage.setItem('iads_users', JSON.stringify(newUsers));
+    // If current user is updated, update the local user state too
+    if (user) {
+      const updatedMe = newUsers.find(u => u.id === user.id);
+      if (updatedMe) setUser(updatedMe);
+    }
+  };
+
+  const updateTenants = (newTenants: Tenant[]) => {
+    setDbTenants(newTenants);
+    localStorage.setItem('iads_tenants', JSON.stringify(newTenants));
+  };
+
+  const updatePlatformLogo = (newLogo: string) => {
+    setPlatformLogo(newLogo);
+    localStorage.setItem('iads_platform_logo', newLogo);
+  };
+
   const handleLogin = (userData: User) => {
     setUser(userData);
-    // Redirigir según rol si es necesario, pero inbox es buena por defecto
     setCurrentView('inbox');
   };
 
   const handleLogout = () => {
-    // Limpiamos el estado del usuario y reseteamos la vista
     setUser(null);
     setCurrentView('inbox');
     setIsSidebarOpen(false);
   };
 
   if (!user) {
-    return <Login onLogin={handleLogin} />;
+    return <Login onLogin={handleLogin} users={dbUsers} />;
   }
 
   const isSuperAdmin = user.role === 'superadmin';
   const isAdmin = user.role === 'admin';
   const isAgent = user.role === 'agent';
+
+  // Get current branding logo
+  const currentTenant = dbTenants.find(t => t.id === user.tenantId);
+  const brandingLogo = (isAdmin || isAgent) && currentTenant?.logoUrl 
+    ? currentTenant.logoUrl 
+    : platformLogo;
 
   const NavItem = ({ view, icon: Icon, label, hidden = false }: { view: View; icon: any; label: string; hidden?: boolean }) => {
     if (hidden) return null;
@@ -77,7 +132,6 @@ const App = () => {
 
   return (
     <div className="flex h-screen overflow-hidden bg-slate-50 animate-in fade-in duration-700">
-      {/* Sidebar Overlay for Mobile */}
       {isSidebarOpen && (
         <div 
           className="fixed inset-0 bg-slate-900/40 z-30 md:hidden backdrop-blur-sm"
@@ -85,19 +139,24 @@ const App = () => {
         />
       )}
 
-      {/* Sidebar */}
       <aside className={`
         fixed md:static inset-y-0 left-0 z-40 w-64 bg-white border-r border-slate-200 transform transition-transform duration-300 ease-in-out flex flex-col
         ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
       `}>
-        <div className="h-20 flex items-center px-6 border-b border-slate-100">
+        <div className="h-20 flex items-center px-6 border-b border-slate-100 overflow-hidden">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-md">
-              I
-            </div>
-            <div>
-              <span className="text-lg font-black text-slate-800 tracking-tight block leading-none">IADS</span>
-              <span className="text-[10px] text-blue-500 font-bold uppercase tracking-widest">Platform</span>
+            <img 
+              src={brandingLogo} 
+              alt="Logo" 
+              className="w-10 h-10 rounded-xl object-cover shadow-sm bg-slate-50 border border-slate-100" 
+            />
+            <div className="min-w-0">
+              <span className="text-lg font-black text-slate-800 tracking-tight block leading-none truncate">
+                {currentTenant && (isAdmin || isAgent) ? currentTenant.name : 'IADS'}
+              </span>
+              <span className="text-[10px] text-blue-500 font-bold uppercase tracking-widest truncate block">
+                {currentTenant && (isAdmin || isAgent) ? 'Agency Portal' : 'Platform'}
+              </span>
             </div>
           </div>
         </div>
@@ -119,25 +178,26 @@ const App = () => {
           {(isSuperAdmin || isAdmin) && (
             <div className="mb-8">
                 <p className="px-3 text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-4">Administración</p>
-                {/* Solo para el dueño del SaaS */}
                 <NavItem view="reseller" icon={Building2} label="Reseller Portal" hidden={!isSuperAdmin} />
-                
-                {/* Para dueño de agencia */}
                 <NavItem view="team" icon={UserPlus} label="Gestionar Equipo" hidden={!isAdmin} />
                 <NavItem view="billing" icon={Box} label="Planes y Pagos" hidden={isSuperAdmin} />
-                
-                <NavItem view="settings" icon={Settings} label="Integración" />
+                <NavItem view="settings" icon={Settings} label="Configuración" />
+                <NavItem view="documentation" icon={BookOpen} label="Documentación" />
             </div>
           )}
         </div>
 
-        {/* User Profile */}
         <div className="p-4 border-t border-slate-100 bg-slate-50/50">
-          <div className="flex items-center gap-3 px-3 py-3 rounded-2xl bg-white border border-slate-200 shadow-sm mb-3">
+          <button 
+            onClick={() => setCurrentView('profile')}
+            className={`w-full flex items-center gap-3 px-3 py-3 rounded-2xl border transition-all mb-3 text-left ${
+              currentView === 'profile' ? 'bg-blue-50 border-blue-200' : 'bg-white border-slate-200 shadow-sm hover:border-blue-300'
+            }`}
+          >
             <img 
               src={user.avatar} 
               alt="User" 
-              className="w-10 h-10 rounded-full object-cover border-2 border-slate-100 shadow-sm"
+              className="w-10 h-10 rounded-full object-cover border-2 border-slate-100"
             />
             <div className="flex-1 min-w-0">
               <p className="text-sm font-bold text-slate-800 truncate">{user.name}</p>
@@ -146,7 +206,7 @@ const App = () => {
                  <p className="text-[10px] text-slate-500 font-black uppercase tracking-tighter truncate">{user.role}</p>
               </div>
             </div>
-          </div>
+          </button>
           
           <button 
             type="button"
@@ -159,9 +219,7 @@ const App = () => {
         </div>
       </aside>
 
-      {/* Main Content Area */}
       <main className="flex-1 flex flex-col h-full min-w-0">
-        {/* Mobile Header */}
         <div className="h-16 border-b border-slate-200 bg-white flex items-center px-4 md:hidden">
           <button 
             onClick={() => setIsSidebarOpen(true)}
@@ -172,23 +230,43 @@ const App = () => {
           <span className="ml-4 font-bold text-slate-800 uppercase tracking-widest text-sm">{currentView}</span>
         </div>
 
-        {/* Dynamic Content */}
         <div className="flex-1 overflow-hidden relative">
           {currentView === 'inbox' && <Inbox />}
           {currentView === 'dashboard' && <Dashboard />}
-          {currentView === 'reseller' && (isSuperAdmin ? <ResellerPortal /> : <Dashboard />)}
+          {currentView === 'reseller' && (isSuperAdmin ? (
+            <ResellerPortal 
+              tenants={dbTenants} 
+              onUpdateTenants={updateTenants} 
+              users={dbUsers} 
+              onUpdateUsers={updateUsers}
+              platformLogo={platformLogo}
+              onUpdatePlatformLogo={updatePlatformLogo}
+            />
+          ) : <Dashboard />)}
           {currentView === 'agents' && <AiAgents />}
-          {currentView === 'settings' && <IntegrationSettings />}
+          {currentView === 'settings' && (
+            <IntegrationSettings 
+              onNavigateDocs={() => setCurrentView('documentation')} 
+              currentTenant={currentTenant}
+              onUpdateTenant={(t) => updateTenants(dbTenants.map(item => item.id === t.id ? t : item))}
+            />
+          )}
           {currentView === 'contacts' && <Contacts />}
           {currentView === 'campaigns' && <Campaigns />}
           {currentView === 'billing' && <Billing />}
+          {currentView === 'documentation' && <Documentation />}
           {currentView === 'team' && (
-              <div className="p-8 h-full bg-white flex flex-col items-center justify-center text-center">
-                  <Users className="w-16 h-16 text-slate-200 mb-4" />
-                  <h2 className="text-2xl font-bold text-slate-800">Gestión de Equipo</h2>
-                  <p className="text-slate-500 max-w-md mt-2">Como Admin de la agencia, aquí podrás crear las cuentas de tus agentes de soporte y ventas.</p>
-                  <button className="mt-6 bg-blue-600 text-white px-6 py-2.5 rounded-xl font-bold shadow-lg shadow-blue-100">Añadir Agente</button>
-              </div>
+            <TeamManagement 
+              currentUser={user} 
+              users={dbUsers} 
+              onUpdateUsers={updateUsers} 
+            />
+          )}
+          {currentView === 'profile' && (
+            <Profile 
+              user={user} 
+              onUpdateUser={(updated) => updateUsers(dbUsers.map(u => u.id === updated.id ? updated : u))} 
+            />
           )}
         </div>
       </main>

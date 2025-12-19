@@ -1,13 +1,45 @@
 
 import { Contact, Conversation, Tenant, User, AiAgent } from './types';
 
-export const CURRENT_USER: User = {
-  id: 'me',
-  name: 'Agent Smith',
-  email: 'agent.smith@iads.com',
-  avatar: 'https://picsum.photos/id/1005/100/100',
-  role: 'superadmin', 
-};
+export const MOCK_USERS: User[] = [
+  {
+    id: 'sa1',
+    name: 'Super Admin IADS',
+    email: 'admin@iads.com',
+    password: 'superpassword',
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Felix',
+    role: 'superadmin'
+  },
+  {
+    id: 'a1',
+    name: 'Roberto Agency',
+    email: 'owner@agency.com',
+    password: 'adminpassword',
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Aneka',
+    role: 'admin',
+    tenantId: 't1'
+  },
+  {
+    id: 'ag1',
+    name: 'Juan Soporte',
+    email: 'soporte@agency.com',
+    password: 'agentpassword',
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=John',
+    role: 'agent',
+    tenantId: 't1'
+  },
+  {
+    id: 'ag2',
+    name: 'Maria Ventas',
+    email: 'ventas@agency.com',
+    password: 'agentpassword',
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Maria',
+    role: 'agent',
+    tenantId: 't1'
+  }
+];
+
+export const CURRENT_USER: User = MOCK_USERS[0];
 
 export const MOCK_CONTACTS: Record<string, Contact> = {
   'c1': {
@@ -84,7 +116,9 @@ export const MOCK_TENANTS: Tenant[] = [
     status: 'active', 
     users: 5, 
     monthlyRevenue: 200, 
-    nextBilling: '2023-11-01' 
+    nextBilling: '2023-11-01',
+    adminEmail: 'owner@agency.com',
+    adminPassword: 'adminpassword'
   }
 ];
 
@@ -107,6 +141,6 @@ export const MOCK_AGENTS: AiAgent[] = [
     systemInstruction: 'Eres un técnico de soporte. Ayuda al usuario con paciencia. Si el problema es grave, pide sus datos para escalarlo.',
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Aneka',
     isActive: true,
-    isAutoReplyEnabled: false
+    isAutoReplyEnabled: true
   }
 ];

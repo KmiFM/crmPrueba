@@ -6,7 +6,8 @@ export interface User {
   password?: string;
   avatar: string;
   role: 'agent' | 'admin' | 'superadmin';
-  tenantId?: string; // ID de la agencia a la que pertenece
+  tenantId?: string; 
+  phone?: string; // New: Contact method
 }
 
 export interface Message {
@@ -56,6 +57,9 @@ export interface Tenant {
   users: number;
   monthlyRevenue: number;
   nextBilling: string;
+  adminEmail?: string;
+  adminPassword?: string;
+  logoUrl?: string; // New: White label logo
 }
 
 export interface AiAgent {
