@@ -1,11 +1,10 @@
-
 import React, { useState, useEffect } from 'react';
-import { 
-  LayoutDashboard, 
-  MessageSquare, 
-  Users, 
-  Settings, 
-  LogOut, 
+import {
+  LayoutDashboard,
+  MessageSquare,
+  Users,
+  Settings,
+  LogOut,
   Menu,
   Building2,
   Box,
@@ -47,7 +46,7 @@ const App = () => {
     const savedUsers = localStorage.getItem('iads_users');
     const savedTenants = localStorage.getItem('iads_tenants');
     const savedLogo = localStorage.getItem('iads_platform_logo');
-    
+
     if (savedUsers) setDbUsers(JSON.parse(savedUsers));
     else {
       setDbUsers(MOCK_USERS);
@@ -105,8 +104,8 @@ const App = () => {
 
   // Get current branding logo
   const currentTenant = dbTenants.find(t => t.id === user.tenantId);
-  const brandingLogo = (isAdmin || isAgent) && currentTenant?.logoUrl 
-    ? currentTenant.logoUrl 
+  const brandingLogo = (isAdmin || isAgent) && currentTenant?.logoUrl
+    ? currentTenant.logoUrl
     : platformLogo;
 
   const NavItem = ({ view, icon: Icon, label, hidden = false }: { view: View; icon: any; label: string; hidden?: boolean }) => {
@@ -118,11 +117,10 @@ const App = () => {
           setCurrentView(view);
           setIsSidebarOpen(false);
         }}
-        className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl mb-1 transition-all ${
-          currentView === view 
-            ? 'bg-blue-600 text-white shadow-lg shadow-blue-200 translate-x-1' 
+        className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl mb-1 transition-all ${currentView === view
+            ? 'bg-blue-600 text-white shadow-lg shadow-blue-200 translate-x-1'
             : 'text-slate-500 hover:bg-slate-100 hover:text-slate-900'
-        }`}
+          }`}
       >
         <Icon className="w-5 h-5" />
         <span className="font-semibold text-sm">{label}</span>
@@ -133,7 +131,7 @@ const App = () => {
   return (
     <div className="flex h-screen overflow-hidden bg-slate-50 animate-in fade-in duration-700">
       {isSidebarOpen && (
-        <div 
+        <div
           className="fixed inset-0 bg-slate-900/40 z-30 md:hidden backdrop-blur-sm"
           onClick={() => setIsSidebarOpen(false)}
         />
@@ -145,10 +143,10 @@ const App = () => {
       `}>
         <div className="h-20 flex items-center px-6 border-b border-slate-100 overflow-hidden">
           <div className="flex items-center gap-3">
-            <img 
-              src={brandingLogo} 
-              alt="Logo" 
-              className="w-10 h-10 rounded-xl object-cover shadow-sm bg-slate-50 border border-slate-100" 
+            <img
+              src={brandingLogo}
+              alt="Logo"
+              className="w-10 h-10 rounded-xl object-cover shadow-sm bg-slate-50 border border-slate-100"
             />
             <div className="min-w-0">
               <span className="text-lg font-black text-slate-800 tracking-tight block leading-none truncate">
@@ -177,38 +175,37 @@ const App = () => {
 
           {(isSuperAdmin || isAdmin) && (
             <div className="mb-8">
-                <p className="px-3 text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-4">Administración</p>
-                <NavItem view="reseller" icon={Building2} label="Reseller Portal" hidden={!isSuperAdmin} />
-                <NavItem view="team" icon={UserPlus} label="Gestionar Equipo" hidden={!isAdmin} />
-                <NavItem view="billing" icon={Box} label="Planes y Pagos" hidden={isSuperAdmin} />
-                <NavItem view="settings" icon={Settings} label="Configuración" />
-                <NavItem view="documentation" icon={BookOpen} label="Documentación" />
+              <p className="px-3 text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-4">Administración</p>
+              <NavItem view="reseller" icon={Building2} label="Reseller Portal" hidden={!isSuperAdmin} />
+              <NavItem view="team" icon={UserPlus} label="Gestionar Equipo" hidden={!isAdmin} />
+              <NavItem view="billing" icon={Box} label="Planes y Pagos" hidden={isSuperAdmin} />
+              <NavItem view="settings" icon={Settings} label="Configuración" />
+              <NavItem view="documentation" icon={BookOpen} label="Documentación" />
             </div>
           )}
         </div>
 
         <div className="p-4 border-t border-slate-100 bg-slate-50/50">
-          <button 
+          <button
             onClick={() => setCurrentView('profile')}
-            className={`w-full flex items-center gap-3 px-3 py-3 rounded-2xl border transition-all mb-3 text-left ${
-              currentView === 'profile' ? 'bg-blue-50 border-blue-200' : 'bg-white border-slate-200 shadow-sm hover:border-blue-300'
-            }`}
+            className={`w-full flex items-center gap-3 px-3 py-3 rounded-2xl border transition-all mb-3 text-left ${currentView === 'profile' ? 'bg-blue-50 border-blue-200' : 'bg-white border-slate-200 shadow-sm hover:border-blue-300'
+              }`}
           >
-            <img 
-              src={user.avatar} 
-              alt="User" 
+            <img
+              src={user.avatar}
+              alt="User"
               className="w-10 h-10 rounded-full object-cover border-2 border-slate-100"
             />
             <div className="flex-1 min-w-0">
               <p className="text-sm font-bold text-slate-800 truncate">{user.name}</p>
               <div className="flex items-center gap-1">
-                 {isSuperAdmin ? <ShieldCheck className="w-3 h-3 text-blue-600" /> : <UserCircle className="w-3 h-3 text-slate-400" />}
-                 <p className="text-[10px] text-slate-500 font-black uppercase tracking-tighter truncate">{user.role}</p>
+                {isSuperAdmin ? <ShieldCheck className="w-3 h-3 text-blue-600" /> : <UserCircle className="w-3 h-3 text-slate-400" />}
+                <p className="text-[10px] text-slate-500 font-black uppercase tracking-tighter truncate">{user.role}</p>
               </div>
             </div>
           </button>
-          
-          <button 
+
+          <button
             type="button"
             onClick={handleLogout}
             className="w-full flex items-center justify-center gap-2 px-3 py-2.5 text-slate-500 hover:text-red-600 hover:bg-red-50 rounded-xl text-sm font-bold transition-all group"
@@ -221,7 +218,7 @@ const App = () => {
 
       <main className="flex-1 flex flex-col h-full min-w-0">
         <div className="h-16 border-b border-slate-200 bg-white flex items-center px-4 md:hidden">
-          <button 
+          <button
             onClick={() => setIsSidebarOpen(true)}
             className="p-2 text-slate-500 hover:bg-slate-100 rounded-lg"
           >
@@ -234,10 +231,10 @@ const App = () => {
           {currentView === 'inbox' && <Inbox />}
           {currentView === 'dashboard' && <Dashboard />}
           {currentView === 'reseller' && (isSuperAdmin ? (
-            <ResellerPortal 
-              tenants={dbTenants} 
-              onUpdateTenants={updateTenants} 
-              users={dbUsers} 
+            <ResellerPortal
+              tenants={dbTenants}
+              onUpdateTenants={updateTenants}
+              users={dbUsers}
               onUpdateUsers={updateUsers}
               platformLogo={platformLogo}
               onUpdatePlatformLogo={updatePlatformLogo}
@@ -245,8 +242,8 @@ const App = () => {
           ) : <Dashboard />)}
           {currentView === 'agents' && <AiAgents />}
           {currentView === 'settings' && (
-            <IntegrationSettings 
-              onNavigateDocs={() => setCurrentView('documentation')} 
+            <IntegrationSettings
+              onNavigateDocs={() => setCurrentView('documentation')}
               currentTenant={currentTenant}
               onUpdateTenant={(t) => updateTenants(dbTenants.map(item => item.id === t.id ? t : item))}
             />
@@ -256,16 +253,16 @@ const App = () => {
           {currentView === 'billing' && <Billing />}
           {currentView === 'documentation' && <Documentation />}
           {currentView === 'team' && (
-            <TeamManagement 
-              currentUser={user} 
-              users={dbUsers} 
-              onUpdateUsers={updateUsers} 
+            <TeamManagement
+              currentUser={user}
+              users={dbUsers}
+              onUpdateUsers={updateUsers}
             />
           )}
           {currentView === 'profile' && (
-            <Profile 
-              user={user} 
-              onUpdateUser={(updated) => updateUsers(dbUsers.map(u => u.id === updated.id ? updated : u))} 
+            <Profile
+              user={user}
+              onUpdateUser={(updated) => updateUsers(dbUsers.map(u => u.id === updated.id ? updated : u))}
             />
           )}
         </div>
