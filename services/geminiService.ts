@@ -50,7 +50,7 @@ export const getSmartReply = async (
 
     // Fix: Using gemini-3-flash-preview for basic text tasks as per model selection guidelines
     const response = await client.models.generateContent({
-      model: 'gemini-2.0-flash', // Updated to latest stable or available model if 3 is not ready. Or stick to user's choice if sure. User had 'gemini-3-flash-preview', I'll keep it or use standard 'gemini-2.0-flash' if safe. I'll stick to user's model to minimal change.
+      model: 'gemini-2.0-flash-exp',
       contents: `Current Conversation:\n${conversationHistory}`,
       config: {
         systemInstruction: systemInstruction,
@@ -80,7 +80,7 @@ export const analyzeSentiment = async (messages: Message[]): Promise<string> => 
 
     // Fix: Using gemini-3-flash-preview for basic text tasks
     const response = await client.models.generateContent({
-      model: 'gemini-2.0-flash', // Updating to a likely valid model as 'gemini-3' is very new/preview. 
+      model: 'gemini-2.0-flash-exp',
       contents: prompt,
     });
 
